@@ -1,11 +1,12 @@
 float x,y;
 float gravity,speed;
+float size;
 boolean[] keys;
 boolean value;
 double xVel,yVel;
 
 void setup() {
-  size(800,800);
+  size(1240,860);
   frameRate(60);
   keys = new boolean[6];
   keys[0] = false;
@@ -13,10 +14,12 @@ void setup() {
   keys[2] = false;
   keys[3] = false;
   keys[4] = false;
+  xVel = 0;
   x = width/2;
   y = 0;
   gravity = .1;
   speed = 0;
+  size = 25;
   
   value = false;
   
@@ -26,6 +29,21 @@ void setup() {
 void draw() {
   if (frameCount % 30 == 0) {
   System.out.println("Y level " + y);
+  System.out.println("XVel" + xVel);
+  }
+  
+  if (frameCount % 2 == 0) {
+    if (xVel != 0) {
+       if (Math.abs(xVel) < 50) {
+       x += xVel;
+       }
+       if (xVel > 0) {
+         xVel-=1;
+       } else if (xVel < 0) {
+         xVel+=1;
+       }
+    }
+     
   }
   noStroke();
   background(#DCE3E8);
@@ -63,41 +81,55 @@ void draw() {
   if (keys[2] && (keys[0] == false) 
               && (keys[1] == false) 
               && (keys[3] == false)) {
-   x-=5; 
+   if (y == 600) {
+     x-=5;
+   } else {
+   x-=2;
+   xVel-=1;
+   }
   }
   
   if (keys[3] && (keys[0] == false) 
               && (keys[1] == false) 
               && (keys[2] == false)) {
-   x+=5; 
+   if (y == 600) {
+     x+=5;
+   } else {
+   x+=2;
+   xVel+=1;
+   }
   }
   
   if (keys[0] && (keys[1] == false) 
               && (keys[2] == true) 
               && (keys[3] == false)) {
    y-=5;
-   x-=2.5;
+   x-=2;
+   xVel-=1;
   }
   
   if (keys[0] && (keys[1] == false) 
               && (keys[2] == false) 
               && (keys[3] == true)) {
    y-=5; 
-   x+=5;
+   x+=2;
+   xVel+=1;
   }
   
   if (keys[1] && (keys[0] == false) 
               && (keys[2] == true) 
               && (keys[3] == false)) {
    y+=5; 
-   x-=5;
+   x-=2;
+   xVel-=1;
   }
   
   if (keys[1] && (keys[0] == false) 
               && (keys[2] == false) 
               && (keys[3] == true)) {
    y+=5; 
-   x+=5;
+   x+=2;
+   xVel+=1;
   }
   
   //if (within(y,600,.1) == true && within(x,600,.1) == true) {
@@ -110,14 +142,22 @@ void draw() {
     fill(0);
     rect(x,y,20,20);
     rect(mouseX,mouseY,20,20);
-    if (sqrt((float)Math.pow(mouseX-x,2) + (float)Math.pow(mouseY-y,2)) < 250 ) {
+    if (sqrt((float)Math.pow(mouseX-x,2) + (float)Math.pow(mouseY-y,2)) < size*5 ) {
       stroke(120);
       line(mouseX,mouseY,x,y);
-      if (within(x,mouseX,1) == true || within(mouseX,x,1)) {
-      x += (mouseX-x)/20;
+      if (within(x,mouseX,1) || within(mouseX,x,1)) {
+      x += (mouseX-x)/25;
+        if (within(x,mouseX,1)) {
+        xVel-=2;
+      } if (within(mouseX,x,1)) {
+         xVel+=2; 
+         }
+        
       }
-      if (within(y,mouseY,1) == true || within(mouseY,y,1)) {
-      y -= (y-mouseY)/30;
+      if (within(y,mouseY,1) || within(mouseY,y,1)) {
+      y -= (y-mouseY)/25;
+      } else if (Math.abs((mouseY-y)) <= .5) {
+        y = mouseY;
       }
     }
   }
@@ -132,12 +172,13 @@ void draw() {
 }
 
 void spawn() {
- rect(x,y,50,50);
+ rect(x,y,size,size);
 }
 
 void reset() {
  x = width/2;
  y = height/2;
+ xVel = 0;
 }
 
 void keyPressed() {
@@ -215,6 +256,6 @@ Boolean within(float value, float value2, float tolerance) {
 
   
 void sillySquare() {
-  rect(0,650,800,200);
+  rect(0,600+size,width,height/2);
   
   }
